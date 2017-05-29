@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Introduction to Flow</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/moon.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<section class="reveal">
+			<section class="slides">
+
+				<section>
+					<h1>
+						Introduction to
+            <img style="border:none; padding: 20px"
+                 src="https://raw.githubusercontent.com/facebook/flow/ba730fa49833dbc71a2d1a4debaaa903c68aa76b/website/_assets/images/flow-hero-logo.png">
+					</h1>
+                    <p><a href="https://flowtype.org/"><code>https://flowtype.org/</code></a></p>
+
+				</section>
+
+				<section>
+					<h3>Nicolas Maquet</h3>
+          <p>Full-Stack Dev at Movio</p>
+					<p><code>@nicmaquet</code></p>
+					<p><code>github.com/nmaquet</code></p>
+					<br/>
+					<h4>Slides & Blog Post</h4>
+          <p><code>https://nmaquet.github.io/flow-akljs-talk</code></p>
+                    <p><em>(upcoming)</em> &nbsp; &nbsp; <code>http://movio.co/blog</code></p>
+				</section>
+
+        <section>
+            <h1>What is Flow?</h1>
+            <ul>
+                <li>Static type checker for JavaScript (ES5, ES6, ES7+)</li>
+                <li>Created and open-sourced by Facebook in November 2014</li>
+                <li>Used internally by Facebook projects <a href="https://github.com/facebook/react/blob/c78464f8ea9a5b00ec80252d20a71a1482210e57/src/renderers/shared/stack/reconciler/ReactNodeTypes.js">including React</a></li>
+                <li>Similar in nature to Microsoft's TypeScript</li>
+                <li>Written in OCaml</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>Static typing?<br>for JavaScript?</h1>
+            <img src="http://vignette2.wikia.nocookie.net/smurfs/images/d/d7/819028-grouchy_large.jpg/revision/latest?cb=20130624233208">
+        </section>
+
+        <section>
+            <h1>The bad news...</h1>
+            <ul>
+                <li>large codebases</li>
+                <li>complex application logic</li>
+                <li>large or multiple teams</li>
+                <li>long project lifespan</li>
+                <li>...</li>
+            </ul>
+            <br>
+            <br>
+            <span style="color: #ff2c2d;">Static typing tends to pay off in this context</span>
+            <br>
+            <span style="color: #ff2c2d;">... so we should probably look into it.</span>
+        </section>
+
+        <section>
+            <h1>The good news!</h1>
+            <ul>
+                <li>Flow code looks and feels like JavaScript</li>
+                <li>Flow types are never mandatory</li>
+                <li>Flow code and regular JavaScript interact without issue</li>
+                <li>Flow is FAST</li>
+                <li>Flow is not part of your build pipeline (1 Babel plugin)</li>
+                <li>Flow does not prevent code execution</li>
+                <li>Flow has no runtime impact overhead</li>
+            </ul>
+        </section>
+
+        <section>
+          <h1>DEMO</h1>
+        </section>
+
+        <section>
+          <pre><code class="javascript">/* Flow has all the JavaScript primitive types:
+
+* string
+* number (includes NaN and Infinity)
+* boolean
+* null
+* void (a.k.a undefined)
+*/
+
+const name: string = 'Papa Smurf';
+
+const age: number = 300;
+
+const heightInApples: number = 3;
+
+const isAwake: boolean = true;</code></pre>
+        </section>
+
+        <section>
+          <pre><code class="javascript">/*
+* Structural typing for objects
+* Type aliases
+*/
+
+type Smurf = { name: string, age: number, isAwake: boolean };
+
+const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
+
+function toString(smurf: Smurf): string {
+    return `${smurf.name} is ${smurf.age} years old`;
+}
+
+toString(papaSmurf);</code></pre>
+                </section>
+                <section>
+          <pre><code class="javascript">/*
+* either T[]
+* or Array&lt;T&gt;
+*/
+
+type Smurf = { name: string, age: number, isAwake: boolean };
+
+const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
+const smurfette = { name: "Smurfette", age: 150, isAwake: false };
+
+const smurfs: Smurf[] = [papaSmurf, smurfette];
+
+function sumOfAges(smurfs: Array&lt;Smurf&gt;): number {
+    return smurfs.reduce((sum, smurf) => sum + smurf.age, 0);
+}</code></pre>
+                </section>
+
+<section>
+          <pre><code class="javascript">/*
+ Function types are (arg1: T1, arg2: T2, ...) => T
+ */
+
+type Smurf = { name: string, age: number, isAwake: boolean };
+
+const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
+const smurfette = { name: "Smurfette", age: 150, isAwake: false};
+
+type SmurfMetric = (s: Smurf) => number
+
+function measure(smurf: Smurf, metrics: SmurfMetric[]): number[] {
+    let result = [];
+    for (const metric of metrics) {
+        result.push(metric(smurf));
+    }
+    return result;
+}
+
+measureMetrics(papaSmurf, [
+  (s) => s.name.length,
+  (s) => Math.pow(s.age,2)
+]);</code></pre>
+</section>
+
+<section>
+          <pre><code class="javascript">/*
+ * any literal can be a type
+ * union: type T = T1 | T2 | ...
+ * intersection: type T = T1 & T2 & ...
+ */
+
+type Smurf = {
+    name: string,
+    age: number,
+    status: 'awake' | 'sleeping' | 'zombie',
+}
+
+type Spell = string
+
+type Wizard = {
+    spells: Spell[]
+}
+
+type SmurfWizard = Smurf & Wizard;
+
+const papaSmurf : SmurfWizard = {
+    name: "Papa Smurf",
+    age: 300,
+    status: 'awake',
+    spells: ["wingardium leviosa", "fireball"],
+};</code></pre></section>
+
+                <section>
+          <pre><code class="javascript">// @flow
+
+/*
+
+- any is a subtype and a supertype of all values
+- mixed is a supertype of all values, but a subtype of none
+
+ */
+
+
+import _ from 'lodash';
+
+type Smurf = {
+    name: string,
+    age: number,
+    isAwake: boolean
+}
+
+const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
+const smurfette = { name: "Smurfette", age: 150, isAwake: false};
+
+function mkSmurf(arg: mixed): Smurf {
+
+    if (typeof arg === 'string') {
+        return { name: arg, age: 300, isAwake: true };
+    }
+
+    if (typeof arg === 'number') {
+        return { name: "Smurf", age: arg, isAwake: true };
+    }
+
+    if (typeof arg === 'boolean') {
+        return { name: "Smurf", age: 300, isAwake: arg};
+    }
+
+    throw new Error("invalid argument", arg);
+}
+</code></pre></section>
+
+                <section>
+          <pre><code class="javascript">/*
+
+ { foo? : T } is optionally T, meaning T | void
+ { foo : ?T } is maybe T, meaning T | null | void
+
+  No sugar for `T | null`, but easy enough to type anyway
+
+ */
+
+type Smurf = { name: string, age: ?number };
+
+const papa: Smurf = { name: "Papa Smurf", age: 300 };
+const smurfette: Smurf = { name: "Smurfette", age: 200 };
+
+function toString(smurf: Smurf, suffix: string = "") {
+    if (smurf.age == null) {
+        return `${smurf.name} is immortal ${suffix}`;
+    }
+    return `${smurf.name} is ${smurf.age} years old ${suffix}`;
+}
+
+const x: number | null = 42;
+</code></pre></section>
+
+
+    <section>
+        <h1>And now for some<br>real-world Flow code</h1>
+    </section>
+
+                <section>
+      <h1>Thanks!</h1>
+    </section>
+
+   </section>
+        <script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
