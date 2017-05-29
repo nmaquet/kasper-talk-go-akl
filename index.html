@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Introduction to Flow</title>
+		<title>Kasper: a Kafka Stream Processing Library for Go</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/moon.css">
@@ -26,251 +26,137 @@
 			<section class="slides">
 
 				<section>
-					<h1>
-						Introduction to
-            <img style="border:none; padding: 20px"
-                 src="https://raw.githubusercontent.com/facebook/flow/ba730fa49833dbc71a2d1a4debaaa903c68aa76b/website/_assets/images/flow-hero-logo.png">
+					<h2>
+                        Kasper
+                    </h2>
+                    <h3>a Kafka Stream Processing Library for Go</h3>
+            <img style="border:none; padding: 0px" width="600" height="350"
+                 src="https://movio-live-2bb6ef96eabb4f369327a8b01ec1-73a1b1f.aldryn-media.io/filer_public_thumbnails/filer_public/10/5b/105b4243-52aa-48a9-bde4-0a14e2fc1961/kasper-main.jpg__800x0_q90_crop_subsampling-2.jpg">
 					</h1>
-                    <p><a href="https://flowtype.org/"><code>https://flowtype.org/</code></a></p>
+                    <p><code>github.com/movio/kasper</code></p>
 
 				</section>
 
 				<section>
-					<h3>Nicolas Maquet</h3>
+					<h2>Nicolas Maquet</h2>
           <p>Full-Stack Dev at Movio</p>
 					<p><code>@nicmaquet</code></p>
 					<p><code>github.com/nmaquet</code></p>
 					<br/>
-					<h4>Slides & Blog Post</h4>
-          <p><code>https://nmaquet.github.io/flow-akljs-talk</code></p>
-                    <p><em>(upcoming)</em> &nbsp; &nbsp; <code>http://movio.co/blog</code></p>
+					<h3>Slides & Blog Post</h3>
+                    <small><p><code>https://github.com/nmaquet/kasper-talk-go-akl</code></p></small>
+                    <small><p><code>https://movio.co/en/blog/Kasper-process-library</code></p></small>
 				</section>
 
+
         <section>
-            <h1>What is Flow?</h1>
+            <h1>Kafka</h1>
+            <h3>A distributed streaming platform</h3>
             <ul>
-                <li>Static type checker for JavaScript (ES5, ES6, ES7+)</li>
-                <li>Created and open-sourced by Facebook in November 2014</li>
-                <li>Used internally by Facebook projects <a href="https://github.com/facebook/react/blob/c78464f8ea9a5b00ec80252d20a71a1482210e57/src/renderers/shared/stack/reconciler/ReactNodeTypes.js">including React</a></li>
-                <li>Similar in nature to Microsoft's TypeScript</li>
-                <li>Written in OCaml</li>
+                <li>Message broker, Pub / Sub</li>
+                <li>Distributed</li>
+                <li>Highly available</li>
+                <li>Durable</li>
+                <li>High performance</li>
             </ul>
         </section>
 
         <section>
-            <h1>Static typing?<br>for JavaScript?</h1>
-            <img src="http://vignette2.wikia.nocookie.net/smurfs/images/d/d7/819028-grouchy_large.jpg/revision/latest?cb=20130624233208">
+            <h1>Stream Processing</h1>
+            <ul>
+                <li>Processing message queues in real-time, or near real-time</li>
+                <li>Stateless processing is easy</li>
+                <li>Stateful processing is much harder</li>
+                <li>Most interesting stream problems are stateful<br>(joins, aggregations, windowing)</li>
+            </ul>
         </section>
 
         <section>
-            <h1>The bad news...</h1>
+            <h1>Stream Processing</h1>
+            <h3>Challenges</h3>
             <ul>
-                <li>large codebases</li>
-                <li>complex application logic</li>
-                <li>large or multiple teams</li>
-                <li>long project lifespan</li>
+                <li>State-management</li>
+                <li>Distributed computing / scaling</li>
+                <li>Fault tolerance</li>
+                <li>Instrumentation</li>
+                <li>Logging</li>
+                <li>Testing</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>Stream Processing</h1>
+            <h3>Libraries / Frameworks</h3>
+            <ul>
+                <li>Apache Samza (LinkedIn)</li>
+                <li>Apache Storm + Trident (Twitter)</li>
+                <li>Apache Flink</li>
+                <li>Apache Spark + Spark Streaming</li>
                 <li>...</li>
             </ul>
-            <br>
-            <br>
-            <span style="color: #ff2c2d;">Static typing tends to pay off in this context</span>
-            <br>
-            <span style="color: #ff2c2d;">... so we should probably look into it.</span>
         </section>
 
         <section>
-            <h1>The good news!</h1>
+            <h1>Samza at Movio</h1>
             <ul>
-                <li>Flow code looks and feels like JavaScript</li>
-                <li>Flow types are never mandatory</li>
-                <li>Flow code and regular JavaScript interact without issue</li>
-                <li>Flow is FAST</li>
-                <li>Flow is not part of your build pipeline (1 Babel plugin)</li>
-                <li>Flow does not prevent code execution</li>
-                <li>Flow has no runtime impact overhead</li>
+                <li>14 months in production</li>
+                <li>Dedicated Hadoop / Yarn cluster (6 x AWS I3 series)</li>
+                <li>~40 running applications</li>
+                <li>270 GB of RAM</li>
+                <li>Multiple TB of state</li>
             </ul>
         </section>
 
         <section>
-          <h1>DEMO</h1>
+            <h1>Samza, a retrospective</h1>
+            <h3>What has been awesome</h3>
+            <ul>
+                <li>High performance / reliability</li>
+                <li>Superb API / documentation</li>
+            </ul>
         </section>
 
         <section>
-          <pre><code class="javascript">/* Flow has all the JavaScript primitive types:
-
-* string
-* number (includes NaN and Infinity)
-* boolean
-* null
-* void (a.k.a undefined)
-*/
-
-const name: string = 'Papa Smurf';
-
-const age: number = 300;
-
-const heightInApples: number = 3;
-
-const isAwake: boolean = true;</code></pre>
+            <h1>Samza, a retrospective</h1>
+            <h3>What has been less awesome</h3>
+            <ul>
+                <li>Very expensive in hardware</li>
+                <li>Distributed state has a big overhead</li>
+                <li>Imposes the usage of Hadoop / Yarn</li>
+                <li>Java / Scala based</li>
+            </ul>
         </section>
 
         <section>
-          <pre><code class="javascript">/*
-* Structural typing for objects
-* Type aliases
-*/
+            <h1>Kasper</h1>
+            <ul>
+                <li>Lightweight stream-processing library</li>
+                <li>Created from the lessons we've learned with Samza</li>
+                <li>Does not mandate any clustering technology</li>
+                <li>No fault tolerance out of the box</li>
+                <li>Micro-batch oriented with centralized state management</li>
+                <li>Go-centric</li>
+                <li>Uses sarama from Shopify</li>
+            </ul>
+        </section>
 
-type Smurf = { name: string, age: number, isAwake: boolean };
+        <section>
+            <h1>Kasper features</h1>
+            <ul>
+                <li>Consuming & multiplexing of input topics</li>
+                <li>Batching with configurable size and wait timeout</li>
+                <li>Producing to output topics &amp; marking of offsets</li>
+                <li>Single-threaded processing loop</li>
+                <li>Key-value store interface</li>
+                <li>Builtin support for Elasticsearch, Redis, and in-memory</li>
+                <li>Instrumentation</li>
+                <li>Logging</li>
+            </ul>
+        </section>
 
-const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
-
-function toString(smurf: Smurf): string {
-    return `${smurf.name} is ${smurf.age} years old`;
-}
-
-toString(papaSmurf);</code></pre>
-                </section>
-                <section>
-          <pre><code class="javascript">/*
-* either T[]
-* or Array&lt;T&gt;
-*/
-
-type Smurf = { name: string, age: number, isAwake: boolean };
-
-const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
-const smurfette = { name: "Smurfette", age: 150, isAwake: false };
-
-const smurfs: Smurf[] = [papaSmurf, smurfette];
-
-function sumOfAges(smurfs: Array&lt;Smurf&gt;): number {
-    return smurfs.reduce((sum, smurf) => sum + smurf.age, 0);
-}</code></pre>
-                </section>
-
-<section>
-          <pre><code class="javascript">/*
- Function types are (arg1: T1, arg2: T2, ...) => T
- */
-
-type Smurf = { name: string, age: number, isAwake: boolean };
-
-const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
-const smurfette = { name: "Smurfette", age: 150, isAwake: false};
-
-type SmurfMetric = (s: Smurf) => number
-
-function measure(smurf: Smurf, metrics: SmurfMetric[]): number[] {
-    let result = [];
-    for (const metric of metrics) {
-        result.push(metric(smurf));
-    }
-    return result;
-}
-
-measureMetrics(papaSmurf, [
-  (s) => s.name.length,
-  (s) => Math.pow(s.age,2)
-]);</code></pre>
-</section>
-
-<section>
-          <pre><code class="javascript">/*
- * any literal can be a type
- * union: type T = T1 | T2 | ...
- * intersection: type T = T1 & T2 & ...
- */
-
-type Smurf = {
-    name: string,
-    age: number,
-    status: 'awake' | 'sleeping' | 'zombie',
-}
-
-type Spell = string
-
-type Wizard = {
-    spells: Spell[]
-}
-
-type SmurfWizard = Smurf & Wizard;
-
-const papaSmurf : SmurfWizard = {
-    name: "Papa Smurf",
-    age: 300,
-    status: 'awake',
-    spells: ["wingardium leviosa", "fireball"],
-};</code></pre></section>
-
-                <section>
-          <pre><code class="javascript">// @flow
-
-/*
-
-- any is a subtype and a supertype of all values
-- mixed is a supertype of all values, but a subtype of none
-
- */
-
-
-import _ from 'lodash';
-
-type Smurf = {
-    name: string,
-    age: number,
-    isAwake: boolean
-}
-
-const papaSmurf = { name: "Papa Smurf", age: 300, isAwake: true };
-const smurfette = { name: "Smurfette", age: 150, isAwake: false};
-
-function mkSmurf(arg: mixed): Smurf {
-
-    if (typeof arg === 'string') {
-        return { name: arg, age: 300, isAwake: true };
-    }
-
-    if (typeof arg === 'number') {
-        return { name: "Smurf", age: arg, isAwake: true };
-    }
-
-    if (typeof arg === 'boolean') {
-        return { name: "Smurf", age: 300, isAwake: arg};
-    }
-
-    throw new Error("invalid argument", arg);
-}
-</code></pre></section>
-
-                <section>
-          <pre><code class="javascript">/*
-
- { foo? : T } is optionally T, meaning T | void
- { foo : ?T } is maybe T, meaning T | null | void
-
-  No sugar for `T | null`, but easy enough to type anyway
-
- */
-
-type Smurf = { name: string, age: ?number };
-
-const papa: Smurf = { name: "Papa Smurf", age: 300 };
-const smurfette: Smurf = { name: "Smurfette", age: 200 };
-
-function toString(smurf: Smurf, suffix: string = "") {
-    if (smurf.age == null) {
-        return `${smurf.name} is immortal ${suffix}`;
-    }
-    return `${smurf.name} is ${smurf.age} years old ${suffix}`;
-}
-
-const x: number | null = 42;
-</code></pre></section>
-
-
-    <section>
-        <h1>And now for some<br>real-world Flow code</h1>
-    </section>
+       <section>
+           <h1>Demo</h1>
+       </section>
 
                 <section>
       <h1>Thanks!</h1>
